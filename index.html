@@ -14,15 +14,25 @@
         <!-- Header Section -->
         <header class="header">
             <div class="header-content">
-                <img src="https://via.placeholder.com/50/6366f1/ffffff?text=💰" alt="Finance Logo" class="header-logo">
-                <div>
-                    <h1 class="title">Personal Finance Tracker</h1>
-                    <p class="subtitle">Track your income & expenses with ease</p>
+                <div class="header-logo-container">
+                    <img src="https://images.unsplash.com/photo-1633356122544-f134ef2944f5?w=100&h=100&fit=crop" alt="Finance Logo" class="header-logo">
+                </div>
+                <div class="header-text">
+                    <h1 class="title">💰 Personal Finance Tracker</h1>
+                    <p class="subtitle">Smart Money Management for Everyone</p>
                 </div>
             </div>
         </header>
 
         <main class="main-content">
+            <!-- Hero Image Section -->
+            <section class="hero-section">
+                <img src="https://images.unsplash.com/photo-1460925895917-adf4ee868993?w=800&h=300&fit=crop" alt="Finance Dashboard" class="hero-image">
+                <div class="hero-overlay">
+                    <p>Track your income, manage expenses, achieve financial goals</p>
+                </div>
+            </section>
+
             <!-- Balance Summary Section -->
             <section class="balance-section">
                 <div class="balance-card income-card">
@@ -50,9 +60,31 @@
                 </div>
             </section>
 
+            <!-- Quick Tips Section with Images -->
+            <section class="tips-section">
+                <h2 class="section-title">💡 Money Management Tips</h2>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <img src="https://images.unsplash.com/photo-1574258495687-374ed3b3c0f5?w=200&h=150&fit=crop" alt="Budget Planning" class="tip-image">
+                        <h3>Budget Planning</h3>
+                        <p>Create monthly budgets and stick to them</p>
+                    </div>
+                    <div class="tip-card">
+                        <img src="https://images.unsplash.com/photo-1605559424843-9e4af3016111?w=200&h=150&fit=crop" alt="Save Money" class="tip-image">
+                        <h3>Save Regularly</h3>
+                        <p>Set aside funds for future goals</p>
+                    </div>
+                    <div class="tip-card">
+                        <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=200&h=150&fit=crop" alt="Investment" class="tip-image">
+                        <h3>Invest Wisely</h3>
+                        <p>Grow your wealth through smart investments</p>
+                    </div>
+                </div>
+            </section>
+
             <!-- Add Transaction Section -->
             <section class="transaction-form-section">
-                <h2 class="section-title">Add New Transaction</h2>
+                <h2 class="section-title">➕ Add New Transaction</h2>
                 <form id="transactionForm" class="transaction-form">
                     <div class="form-row">
                         <div class="form-group">
@@ -147,7 +179,7 @@
             <!-- Filter Section -->
             <section class="filter-section">
                 <div class="filter-header">
-                    <h2 class="section-title">Transaction History</h2>
+                    <h2 class="section-title">📜 Transaction History</h2>
                     <div class="filter-controls">
                         <button class="filter-btn active" data-filter="all">All</button>
                         <button class="filter-btn" data-filter="income">Income</button>
@@ -161,7 +193,7 @@
                 <div id="transactionsList" class="transactions-list">
                     <!-- Transactions will be rendered here by JavaScript -->
                     <div class="empty-state">
-                        <img src="https://via.placeholder.com/100/ddd/999?text=📝" alt="Empty" class="empty-icon">
+                        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=100&h=100&fit=crop" alt="Empty" class="empty-icon">
                         <p>No transactions yet. Start tracking your finances! 👆</p>
                     </div>
                 </div>
@@ -176,7 +208,26 @@
 
         <!-- Footer Section -->
         <footer class="footer">
-            <p>&copy; 2026 Personal Finance Tracker | Manage Your Money Wisely</p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About</h4>
+                    <p>Personal Finance Tracker helps you manage your money wisely and achieve financial freedom.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Features</h4>
+                    <ul>
+                        <li>Track Income & Expenses</li>
+                        <li>Analyze Spending Patterns</li>
+                        <li>Export Your Data</li>
+                        <li>Secure Storage</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: support@financeracker.com</p>
+                    <p>&copy; 2026 Personal Finance Tracker</p>
+                </div>
+            </div>
         </footer>
     </div>
 
