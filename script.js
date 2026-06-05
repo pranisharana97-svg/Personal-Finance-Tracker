@@ -1,9 +1,13 @@
 /*
-   Personal Finance Tracker - JavaScript Application
+   Personal Finance Tracker - Enhanced JavaScript Application
    
-   This application uses Object-Oriented Programming with a Transaction class
-   to manage personal finance data. Users can add income and expense transactions,
-   filter them, and see real-time balance calculations.
+   Features:
+   - Object-Oriented design with Transaction and FinanceTracker classes
+   - Real-time balance calculations
+   - Spending analytics (monthly spending, savings rate)
+   - Data export and clear functionality
+   - Persistent storage with localStorage
+   - Responsive and interactive UI
    
    Author: Priya Rani
    Date: 2026
@@ -14,15 +18,15 @@
  * Transaction Class
  * 
  * Represents a single financial transaction (income or expense).
- * This class encapsulates all transaction data and methods.
+ * Encapsulates all transaction data and display methods.
  * 
  * Arguments:
- *   - id: Unique identifier for the transaction (number)
- *   - description: What the transaction is for (string)
- *   - amount: How much money (number)
- *   - category: Category of the transaction (string)
+ *   - id: Unique transaction identifier (number)
+ *   - description: Transaction description (string)
+ *   - amount: Transaction amount in dollars (number)
+ *   - category: Category name (string)
  *   - type: Either 'income' or 'expense' (string)
- *   - date: When the transaction occurred (string in YYYY-MM-DD format)
+ *   - date: Transaction date in YYYY-MM-DD format (string)
  * 
  * Returns: Transaction object with properties and methods
  */
@@ -32,18 +36,18 @@ class Transaction {
         this.description = description;
         this.amount = parseFloat(amount);
         this.category = category;
-        this.type = type; // 'income' or 'expense'
+        this.type = type;
         this.date = date;
     }
 
     /**
      * getFormattedAmount()
      * 
-     * Formats the transaction amount as a currency string.
-     * For expenses, it adds a minus sign.
+     * Formats amount with currency symbol and sign indicator.
+     * Income shows +, expenses show -.
      * 
      * Arguments: None
-     * Returns: Formatted amount string (e.g., "+$100.00" or "-$50.00")
+     * Returns: Formatted currency string (e.g., "+$100.00" or "-$50.00")
      */
     getFormattedAmount() {
         const sign = this.type === 'income' ? '+' : '-';
@@ -53,26 +57,25 @@ class Transaction {
     /**
      * getIcon()
      * 
-     * Returns an emoji icon based on the transaction category.
-     * This icon is displayed in the UI for visual identification.
+     * Returns category-specific emoji icon for visual display.
      * 
      * Arguments: None
-     * Returns: Emoji string representing the category
+     * Returns: Emoji string
      */
     getIcon() {
         const icons = {
             'Salary': '💼',
             'Freelance': '💻',
             'Investment': '📈',
-            'Other Income': '💰',
+            'Bonus': '🎁',
             'Food': '🍔',
             'Transportation': '🚗',
             'Entertainment': '🎬',
+            'Shopping': '🛍️',
             'Utilities': '💡',
             'Healthcare': '🏥',
-            'Shopping': '🛍️',
             'Education': '📚',
-            'Other Expense': '❌'
+            'Other': '❓'
         };
         return icons[this.category] || '💾';
     }
@@ -80,7 +83,7 @@ class Transaction {
     /**
      * getFormattedDate()
      * 
-     * Converts the date string into a more readable format.
+     * Converts date to readable format.
      * 
      * Arguments: None
      * Returns: Formatted date string (e.g., "Jan 15, 2026")
@@ -89,46 +92,58 @@ class Transaction {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return new Date(this.date).toLocaleDateString('en-US', options);
     }
+
+    /**
+     * getMonth()
+     * 
+     * Extracts month and year from transaction date.
+     * Used for monthly spending calculations.
+     * 
+     * Arguments: None
+     * Returns: String in format "YYYY-MM"
+     */
+    getMonth() {
+        return this.date.substring(0, 7);
+    }
 }
 
 // ========== FINANCE TRACKER CLASS ==========
 /**
  * FinanceTracker Class
  * 
- * Main application class that manages all financial data and operations.
- * This class handles storing transactions, calculating totals, filtering,
- * and updating the UI.
+ * Main application controller managing all financial operations.
+ * Handles data storage, calculations, filtering, and analytics.
  * 
  * Arguments: None
- * Returns: FinanceTracker object with all methods
+ * Returns: FinanceTracker object with complete functionality
  */
 class FinanceTracker {
     constructor() {
-        // Array to hold all Transaction instances
+        // Array holding all Transaction instances
         this.transactions = [];
         
-        // Counter to generate unique IDs for transactions
+        // Counter for unique transaction IDs
         this.nextId = 1;
         
-        // Current filter being applied ('all', 'income', or 'expense')
+        // Current active filter ('all', 'income', 'expense')
         this.currentFilter = 'all';
         
-        // Load any existing transactions from browser's localStorage
+        // Load previously saved transactions
         this.loadFromStorage();
     }
 
     /**
      * addTransaction(description, amount, category, type, date)
      * 
-     * Creates a new Transaction object and adds it to the transactions array.
-     * Also saves to localStorage for persistence.
+     * Creates new Transaction object and adds to array.
+     * Automatically saves to localStorage.
      * 
      * Arguments:
-     *   - description: String describing the transaction
-     *   - amount: Number representing the amount
-     *   - category: String category name
-     *   - type: String ('income' or 'expense')
-     *   - date: String in YYYY-MM-DD format
+     *   - description: String description of transaction
+     *   - amount: Numeric amount
+     *   - category: Category string
+     *   - type: 'income' or 'expense'
+     *   - date: YYYY-MM-DD format string
      * 
      * Returns: The newly created Transaction object
      */
@@ -149,13 +164,12 @@ class FinanceTracker {
     /**
      * deleteTransaction(id)
      * 
-     * Removes a transaction from the array by its ID.
-     * Updates localStorage after deletion.
+     * Removes transaction by ID and updates storage.
      * 
      * Arguments:
-     *   - id: Unique identifier of transaction to delete
+     *   - id: Transaction ID to delete
      * 
-     * Returns: Boolean indicating if deletion was successful
+     * Returns: Boolean success indicator
      */
     deleteTransaction(id) {
         const initialLength = this.transactions.length;
@@ -170,11 +184,11 @@ class FinanceTracker {
     /**
      * getTotalIncome()
      * 
-     * Calculates the sum of all income transactions.
-     * Uses array reduce method to sum amounts where type is 'income'.
+     * Calculates sum of all income transactions.
+     * Uses reduce() to efficiently sum amounts.
      * 
      * Arguments: None
-     * Returns: Number representing total income
+     * Returns: Total income (number)
      */
     getTotalIncome() {
         return this.transactions.reduce((sum, transaction) => {
@@ -185,11 +199,11 @@ class FinanceTracker {
     /**
      * getTotalExpenses()
      * 
-     * Calculates the sum of all expense transactions.
-     * Uses array reduce method to sum amounts where type is 'expense'.
+     * Calculates sum of all expense transactions.
+     * Uses reduce() method for efficient computation.
      * 
      * Arguments: None
-     * Returns: Number representing total expenses
+     * Returns: Total expenses (number)
      */
     getTotalExpenses() {
         return this.transactions.reduce((sum, transaction) => {
@@ -200,23 +214,60 @@ class FinanceTracker {
     /**
      * getBalance()
      * 
-     * Calculates current balance by subtracting total expenses from total income.
+     * Calculates current balance (income - expenses).
      * 
      * Arguments: None
-     * Returns: Number representing current balance
+     * Returns: Current balance (number)
      */
     getBalance() {
         return this.getTotalIncome() - this.getTotalExpenses();
     }
 
     /**
-     * getFilteredTransactions()
+     * getMonthlySpent()
      * 
-     * Returns transactions filtered by the current filter setting.
-     * Used to display only certain types of transactions based on user selection.
+     * Calculates current month's expenses.
+     * Filters transactions by current month.
      * 
      * Arguments: None
-     * Returns: Array of Transaction objects matching the current filter
+     * Returns: Current month expense total (number)
+     */
+    getMonthlySpent() {
+        const today = new Date();
+        const currentMonth = today.getFullYear() + '-' + 
+                            String(today.getMonth() + 1).padStart(2, '0');
+        
+        return this.transactions.reduce((sum, transaction) => {
+            if (transaction.type === 'expense' && transaction.getMonth() === currentMonth) {
+                return sum + transaction.amount;
+            }
+            return sum;
+        }, 0);
+    }
+
+    /**
+     * getSavingsRate()
+     * 
+     * Calculates savings rate percentage.
+     * Formula: (Income - Expenses) / Income * 100
+     * 
+     * Arguments: None
+     * Returns: Savings rate percentage (0-100)
+     */
+    getSavingsRate() {
+        const income = this.getTotalIncome();
+        if (income === 0) return 0;
+        return ((this.getBalance() / income) * 100).toFixed(1);
+    }
+
+    /**
+     * getFilteredTransactions()
+     * 
+     * Returns transactions filtered by current filter setting.
+     * Creates loop through array applying filter.
+     * 
+     * Arguments: None
+     * Returns: Filtered array of Transaction objects
      */
     getFilteredTransactions() {
         if (this.currentFilter === 'all') {
@@ -228,10 +279,10 @@ class FinanceTracker {
     /**
      * setFilter(filter)
      * 
-     * Changes the current filter and triggers a UI update.
+     * Updates current filter setting.
      * 
      * Arguments:
-     *   - filter: String ('all', 'income', or 'expense')
+     *   - filter: 'all', 'income', or 'expense'
      * 
      * Returns: None
      */
@@ -242,8 +293,8 @@ class FinanceTracker {
     /**
      * saveToStorage()
      * 
-     * Saves all transactions to browser's localStorage as JSON.
-     * This allows data to persist even after browser is closed.
+     * Persists all data to browser localStorage as JSON.
+     * Ensures data survives page refresh and browser close.
      * 
      * Arguments: None
      * Returns: None
@@ -258,8 +309,8 @@ class FinanceTracker {
     /**
      * loadFromStorage()
      * 
-     * Loads transactions from localStorage if they exist.
-     * Called during initialization to restore previous data.
+     * Restores previously saved data from localStorage.
+     * Recreates Transaction objects from stored JSON.
      * 
      * Arguments: None
      * Returns: None
@@ -270,8 +321,7 @@ class FinanceTracker {
             const data = JSON.parse(saved);
             this.nextId = data.nextId || 1;
             
-            // Recreate Transaction objects from saved data
-            // This is important because JSON doesn't store class methods
+            // Recreate Transaction class instances
             this.transactions = data.transactions.map(t =>
                 new Transaction(t.id, t.description, t.amount, t.category, t.type, t.date)
             );
@@ -281,7 +331,7 @@ class FinanceTracker {
     /**
      * sortTransactionsByDate()
      * 
-     * Sorts transactions in reverse chronological order (newest first).
+     * Sorts array in reverse chronological order (newest first).
      * 
      * Arguments: None
      * Returns: None (modifies array in place)
@@ -289,90 +339,122 @@ class FinanceTracker {
     sortTransactionsByDate() {
         this.transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
+
+    /**
+     * clearAllTransactions()
+     * 
+     * Removes all transactions and resets tracker.
+     * 
+     * Arguments: None
+     * Returns: None
+     */
+    clearAllTransactions() {
+        this.transactions = [];
+        this.nextId = 1;
+        this.saveToStorage();
+    }
+
+    /**
+     * exportAsJSON()
+     * 
+     * Exports all data as JSON file for backup.
+     * 
+     * Arguments: None
+     * Returns: None (triggers download)
+     */
+    exportAsJSON() {
+        const data = {
+            exportDate: new Date().toISOString(),
+            transactions: this.transactions,
+            summary: {
+                totalIncome: this.getTotalIncome(),
+                totalExpenses: this.getTotalExpenses(),
+                balance: this.getBalance()
+            }
+        };
+        
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `finance-tracker-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+    }
 }
 
-// ========== UI CONTROLLER ==========
+// ========== APPLICATION INITIALIZATION ==========
 /**
  * initializeApp()
  * 
- * Sets up the entire application when the page loads.
- * Initializes the FinanceTracker, sets up event listeners,
- * and renders initial UI.
+ * Main initialization function called when DOM loads.
+ * Sets up tracker, event listeners, and initial UI render.
  * 
  * Arguments: None
  * Returns: None
  */
 function initializeApp() {
-    // Create the main application object
+    // Create tracker instance
     const tracker = new FinanceTracker();
-
-    // Sort transactions before rendering
     tracker.sortTransactionsByDate();
 
     // ========== EVENT LISTENERS ==========
 
-    // Handle form submission - when user clicks "Add Transaction" button
+    // Form submission handler
     document.getElementById('transactionForm').addEventListener('submit', (e) => {
-        e.preventDefault(); // Prevent page reload
+        e.preventDefault();
 
-        // Get form values from input fields
         const description = document.getElementById('description').value;
         const amount = document.getElementById('amount').value;
         const category = document.getElementById('category').value;
         const type = document.querySelector('input[name="type"]:checked').value;
         const date = document.getElementById('date').value;
 
-        // Add the transaction to our tracker
         tracker.addTransaction(description, amount, category, type, date);
-
-        // Re-sort transactions after adding
         tracker.sortTransactionsByDate();
 
-        // Reset form fields to empty
         document.getElementById('transactionForm').reset();
-
-        // Set date input to today (better UX)
         setTodayDate();
-
-        // Update all UI displays
         updateAllUI();
     });
 
-    // Handle filter button clicks
+    // Filter button handlers
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            // Remove active class from all buttons
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            
-            // Add active class to clicked button
             e.target.classList.add('active');
-            
-            // Update tracker filter
             tracker.setFilter(e.target.dataset.filter);
-            
-            // Refresh transaction display
             renderTransactions(tracker);
         });
     });
 
-    // Set today's date as default in the date input
-    setTodayDate();
+    // Export button handler
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        tracker.exportAsJSON();
+    });
 
-    // Initial render of the UI
+    // Clear button handler
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        if (confirm('⚠️ Are you sure? This will delete ALL transactions permanently!')) {
+            tracker.clearAllTransactions();
+            updateAllUI();
+        }
+    });
+
+    setTodayDate();
     updateAllUI();
 
-    // ========== HELPER FUNCTION: updateAllUI ==========
     /**
      * updateAllUI()
      * 
-     * Updates all UI elements to reflect current data.
-     * This is called whenever data changes to keep display in sync.
+     * Updates all dashboard elements to reflect current data.
+     * Called whenever data changes.
      * 
-     * Arguments: None (uses tracker from parent scope)
+     * Arguments: None
      * Returns: None
      */
     function updateAllUI() {
-        // Update balance totals at top of page
+        // Update balance cards
         document.getElementById('totalIncome').textContent = 
             `$${tracker.getTotalIncome().toFixed(2)}`;
         document.getElementById('totalExpenses').textContent = 
@@ -380,7 +462,15 @@ function initializeApp() {
         document.getElementById('currentBalance').textContent = 
             `$${tracker.getBalance().toFixed(2)}`;
 
-        // Update the list of transactions
+        // Update stats
+        document.getElementById('totalTransactions').textContent = 
+            tracker.transactions.length;
+        document.getElementById('monthSpent').textContent = 
+            `$${tracker.getMonthlySpent().toFixed(2)}`;
+        document.getElementById('savingsRate').textContent = 
+            `${tracker.getSavingsRate()}%`;
+
+        // Render transactions
         renderTransactions(tracker);
     }
 }
@@ -389,27 +479,29 @@ function initializeApp() {
 /**
  * renderTransactions(tracker)
  * 
- * Creates HTML for each transaction and inserts into the DOM.
- * This is a loop that renders each transaction instance from the array.
+ * Creates HTML for each transaction using loop through array.
+ * Generates dynamic DOM elements from Transaction objects.
  * 
  * Arguments:
- *   - tracker: The FinanceTracker instance containing transaction data
+ *   - tracker: FinanceTracker instance with transactions array
  * 
  * Returns: None (modifies DOM)
  */
 function renderTransactions(tracker) {
     const container = document.getElementById('transactionsList');
-    
-    // Get filtered transactions based on current filter
     const filtered = tracker.getFilteredTransactions();
 
-    // Check if there are any transactions to display
     if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty-state"><p>No transactions yet. Add one to get started! 👆</p></div>';
+        container.innerHTML = `
+            <div class="empty-state">
+                <img src="https://via.placeholder.com/100/ddd/999?text=📝" alt="Empty" class="empty-icon">
+                <p>No transactions to display. Start tracking! 👆</p>
+            </div>
+        `;
         return;
     }
 
-    // Loop through each filtered transaction and create HTML
+    // Loop through filtered transactions and create HTML
     container.innerHTML = filtered.map(transaction => `
         <div class="transaction-item">
             <div class="transaction-left">
@@ -427,7 +519,7 @@ function renderTransactions(tracker) {
                     ${transaction.getFormattedAmount()}
                 </div>
                 <button class="btn btn-danger" onclick="deleteTransactionHandler(${transaction.id})">
-                    Delete
+                    🗑️ Delete
                 </button>
             </div>
         </div>
@@ -437,8 +529,8 @@ function renderTransactions(tracker) {
 /**
  * deleteTransactionHandler(id)
  * 
- * Global function to handle deletion when delete button is clicked.
- * This bridges the gap between inline onclick handlers and our tracker object.
+ * Global handler for delete button clicks.
+ * Manages deletion through localStorage.
  * 
  * Arguments:
  *   - id: Transaction ID to delete
@@ -446,18 +538,12 @@ function renderTransactions(tracker) {
  * Returns: None
  */
 function deleteTransactionHandler(id) {
-    // Get tracker from our current app state
-    // Since tracker is in initializeApp closure, we need a workaround
-    // We'll get all transactions and recreate the app state
-    if (confirm('Are you sure you want to delete this transaction?')) {
-        // Access localStorage directly
+    if (confirm('Delete this transaction?')) {
         const saved = localStorage.getItem('financeTrackerData');
         if (saved) {
             const data = JSON.parse(saved);
             data.transactions = data.transactions.filter(t => t.id !== id);
             localStorage.setItem('financeTrackerData', JSON.stringify(data));
-            
-            // Reinitialize the entire app to reflect changes
             location.reload();
         }
     }
@@ -466,8 +552,8 @@ function deleteTransactionHandler(id) {
 /**
  * setTodayDate()
  * 
- * Sets the date input field to today's date in YYYY-MM-DD format.
- * Provides better UX by defaulting to current date.
+ * Sets date input to current date in YYYY-MM-DD format.
+ * Improves user experience with sensible defaults.
  * 
  * Arguments: None
  * Returns: None
@@ -483,13 +569,13 @@ function setTodayDate() {
 /**
  * escapeHtml(text)
  * 
- * Escapes HTML special characters to prevent XSS attacks.
- * Converts user input so it displays as text, not as HTML.
+ * Sanitizes user input to prevent XSS attacks.
+ * Converts HTML special characters to entities.
  * 
  * Arguments:
  *   - text: String to escape
  * 
- * Returns: Escaped string safe for HTML
+ * Returns: Safe HTML string
  */
 function escapeHtml(text) {
     const map = {
@@ -502,6 +588,5 @@ function escapeHtml(text) {
     return text.replace(/[&<>"']/g, m => map[m]);
 }
 
-// ========== INITIALIZATION ==========
-// Wait for the HTML document to fully load before running JavaScript
+// ========== INITIALIZATION ON PAGE LOAD ==========
 document.addEventListener('DOMContentLoaded', initializeApp);
