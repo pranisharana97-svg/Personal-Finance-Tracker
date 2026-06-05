@@ -9,7 +9,7 @@
    - Persistent storage with localStorage
    - Responsive and interactive UI
    
-   Author: Priya Rani
+   Author: Pranisha Rana
    Date: 2026
 */
 
