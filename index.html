@@ -13,8 +13,13 @@
     <div class="container">
         <!-- Header Section -->
         <header class="header">
-            <h1 class="title">💰 Personal Finance Tracker</h1>
-            <p class="subtitle">Manage your income and expenses with ease</p>
+            <div class="header-content">
+                <img src="https://via.placeholder.com/50/6366f1/ffffff?text=💰" alt="Finance Logo" class="header-logo">
+                <div>
+                    <h1 class="title">Personal Finance Tracker</h1>
+                    <p class="subtitle">Track your income & expenses with ease</p>
+                </div>
+            </div>
         </header>
 
         <main class="main-content">
@@ -51,17 +56,17 @@
                 <form id="transactionForm" class="transaction-form">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="description">Description</label>
+                            <label for="description">Description *</label>
                             <input 
                                 type="text" 
                                 id="description" 
-                                placeholder="e.g., Grocery shopping" 
+                                placeholder="e.g., Monthly Salary" 
                                 required
                             >
                         </div>
 
                         <div class="form-group">
-                            <label for="amount">Amount</label>
+                            <label for="amount">Amount ($) *</label>
                             <input 
                                 type="number" 
                                 id="amount" 
@@ -71,44 +76,30 @@
                                 required
                             >
                         </div>
-
-                        <div class="form-group">
-                            <label for="category">Category</label>
-                            <select id="category" required>
-                                <option value="">Select a category</option>
-                                <option value="Salary">Salary</option>
-                                <option value="Freelance">Freelance</option>
-                                <option value="Investment">Investment</option>
-                                <option value="Other Income">Other Income</option>
-                                <option value="Food">Food</option>
-                                <option value="Transportation">Transportation</option>
-                                <option value="Entertainment">Entertainment</option>
-                                <option value="Utilities">Utilities</option>
-                                <option value="Healthcare">Healthcare</option>
-                                <option value="Shopping">Shopping</option>
-                                <option value="Education">Education</option>
-                                <option value="Other Expense">Other Expense</option>
-                            </select>
-                        </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="type">Type</label>
-                            <div class="radio-group">
-                                <label class="radio-label">
-                                    <input type="radio" name="type" value="income" required>
-                                    <span>Income</span>
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="type" value="expense" required>
-                                    <span>Expense</span>
-                                </label>
-                            </div>
+                            <label for="category">Category *</label>
+                            <select id="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Salary">💼 Salary</option>
+                                <option value="Freelance">💻 Freelance</option>
+                                <option value="Investment">📈 Investment</option>
+                                <option value="Bonus">🎁 Bonus</option>
+                                <option value="Food">🍔 Food & Dining</option>
+                                <option value="Transportation">🚗 Transportation</option>
+                                <option value="Entertainment">🎬 Entertainment</option>
+                                <option value="Shopping">🛍️ Shopping</option>
+                                <option value="Utilities">💡 Utilities</option>
+                                <option value="Healthcare">🏥 Healthcare</option>
+                                <option value="Education">📚 Education</option>
+                                <option value="Other">❓ Other</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="date">Date</label>
+                            <label for="date">Date *</label>
                             <input 
                                 type="date" 
                                 id="date" 
@@ -117,17 +108,51 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Add Transaction</button>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type *</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="type" value="income" required>
+                                    <span>🟢 Income</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="type" value="expense" required>
+                                    <span>🔴 Expense</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">➕ Add Transaction</button>
                 </form>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="stats-section">
+                <div class="stat-card">
+                    <p class="stat-label">Total Transactions</p>
+                    <p class="stat-value" id="totalTransactions">0</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">This Month</p>
+                    <p class="stat-value" id="monthSpent">$0.00</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Savings Rate</p>
+                    <p class="stat-value" id="savingsRate">0%</p>
+                </div>
             </section>
 
             <!-- Filter Section -->
             <section class="filter-section">
-                <h2 class="section-title">Transactions</h2>
-                <div class="filter-controls">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="income">Income</button>
-                    <button class="filter-btn" data-filter="expense">Expense</button>
+                <div class="filter-header">
+                    <h2 class="section-title">Transaction History</h2>
+                    <div class="filter-controls">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="income">Income</button>
+                        <button class="filter-btn" data-filter="expense">Expense</button>
+                    </div>
                 </div>
             </section>
 
@@ -136,15 +161,22 @@
                 <div id="transactionsList" class="transactions-list">
                     <!-- Transactions will be rendered here by JavaScript -->
                     <div class="empty-state">
-                        <p>No transactions yet. Add one to get started! 👆</p>
+                        <img src="https://via.placeholder.com/100/ddd/999?text=📝" alt="Empty" class="empty-icon">
+                        <p>No transactions yet. Start tracking your finances! 👆</p>
                     </div>
                 </div>
+            </section>
+
+            <!-- Clear Data Section -->
+            <section class="actions-section">
+                <button id="exportBtn" class="btn btn-secondary">📥 Export Data</button>
+                <button id="clearBtn" class="btn btn-danger-alt">🗑️ Clear All</button>
             </section>
         </main>
 
         <!-- Footer Section -->
         <footer class="footer">
-            <p>&copy; 2026 Personal Finance Tracker. All rights reserved.</p>
+            <p>&copy; 2026 Personal Finance Tracker | Manage Your Money Wisely</p>
         </footer>
     </div>
 
